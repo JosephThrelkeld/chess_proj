@@ -1,6 +1,7 @@
 #include <iostream>
+#include "Game.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    Game* myGame = Game::instance();
     return 0;
 }
