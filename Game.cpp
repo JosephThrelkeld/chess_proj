@@ -12,3 +12,7 @@ Game* Game::instance() {
     }
     return _instance;
 }
+
+Game::Game() {
+    _board = new Board;
+}
