@@ -11,12 +11,12 @@
 class Game {
 public:
     static Game* instance();
-    Board* gameBoard();
+    Board gameBoard();
 protected:
     Game();
 private:
     static Game* _instance;
-    Board* _board;
+    Board _board;
 };
 
 

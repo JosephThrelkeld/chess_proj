@@ -4,15 +4,17 @@
 
 #include "Game.h"
 
-Game* Game::_instance = 0;
+Game* Game::_instance = nullptr;
 
 Game* Game::instance() {
-    if (_instance == 0) {
+    if (_instance == nullptr) {
         _instance = new Game;
     }
     return _instance;
 }
 
-Game::Game() {
-    _board = new Board;
+Game::Game() = default;
+
+Board Game::gameBoard() {
+    return _board;
 }
