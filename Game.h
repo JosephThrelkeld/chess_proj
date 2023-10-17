@@ -11,13 +11,14 @@
 class Game {
 public:
     static Game* instance();
-    Board gameBoard();
+    Board &getBoard();
 protected:
     Game();
 private:
     static Game* _instance;
     Board _board;
 };
+
 
 
 #endif //CHESS_PROJ_GAME_H

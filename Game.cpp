@@ -15,6 +15,6 @@ Game* Game::instance() {
 
 Game::Game() = default;
 
-Board Game::gameBoard() {
+Board &Game::getBoard() {
     return _board;
 }

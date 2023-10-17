@@ -1,13 +1,12 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/chess_proj.dir/Board.cpp.o"
-  "CMakeFiles/chess_proj.dir/Board.cpp.o.d"
-  "CMakeFiles/chess_proj.dir/Game.cpp.o"
-  "CMakeFiles/chess_proj.dir/Game.cpp.o.d"
-  "CMakeFiles/chess_proj.dir/Piece.cpp.o"
-  "CMakeFiles/chess_proj.dir/Piece.cpp.o.d"
-  "CMakeFiles/chess_proj.dir/main.cpp.o"
-  "CMakeFiles/chess_proj.dir/main.cpp.o.d"
-  "chess_proj"
+  "CMakeFiles/chess_proj.dir/Board.cpp.obj"
+  "CMakeFiles/chess_proj.dir/Game.cpp.obj"
+  "CMakeFiles/chess_proj.dir/Pawn.cpp.obj"
+  "CMakeFiles/chess_proj.dir/Piece.cpp.obj"
+  "CMakeFiles/chess_proj.dir/main.cpp.obj"
+  "chess_proj.exe"
+  "chess_proj.exe.manifest"
+  "chess_proj.lib"
   "chess_proj.pdb"
 )
 

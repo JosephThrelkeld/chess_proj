@@ -7,4 +7,4 @@ add_executable(chess_proj main.cpp
         Board.cpp
         Game.cpp
         Piece.cpp
-        Piece.h)
+        Piece.h Pawn.cpp Pawn.h)
