@@ -6,15 +6,20 @@
 #define CHESS_PROJ_GAME_H
 
 #include "Board.h"
+#include "Pieces/AllPieces.h"
 
 //Using Singleton design pattern as we only want one game running at a time (presumably)
 class Game {
 public:
     static Game* instance();
-    Board &getBoard();
+    void printBoard();
+    void setDefaultStart();
+    void setBackRank(unsigned int row, char color);
+    void setFrontRank(unsigned int row, char color);
 protected:
     Game();
 private:
+    Board &getBoard();
     static Game* _instance;
     Board _board;
 };

@@ -5,8 +5,7 @@
 #ifndef CHESS_PROJ_BOARD_H
 #define CHESS_PROJ_BOARD_H
 
-
-#include "Piece.h"
+#include "Pieces/Piece.h"
 #include <iostream>
 
 //Using operator overloading for testing contents of board because it centralizes all
@@ -22,6 +21,9 @@ public:
     Board();
     friend std::ostream& operator<<(std::ostream& os, const Board& bd);
     void addPiece(Piece* inputPiece, unsigned int rowInput, unsigned int colInput);
+    void clearAllPieces();
+    static const unsigned int getNumRows();
+    static const unsigned int getNumCols();
 private:
     const static unsigned int NUM_ROWS = 8;
     const static unsigned int NUM_COLS = 8;
