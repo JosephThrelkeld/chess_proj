@@ -14,6 +14,7 @@ public:
     static Game* instance();
     void printBoard();
     void setDefaultStart();
+    void movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput);
     void setBackRank(unsigned int row, char color);
     void setFrontRank(unsigned int row, char color);
 protected:

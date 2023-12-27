@@ -37,10 +37,30 @@ void Board::clearAllPieces() {
     }
 }
 
-const unsigned int Board::getNumRows() {
+unsigned int Board::getNumRows() {
     return NUM_ROWS;
 }
 
-const unsigned int Board::getNumCols() {
+unsigned int Board::getNumCols() {
     return NUM_COLS;
+}
+
+Piece* Board::getPiece(unsigned int rowInput, unsigned int colInput) {
+    if (this->_boardSpaceArr[rowInput][colInput] != nullptr) return this->_boardSpaceArr[rowInput][colInput];
+    return nullptr;
+}
+
+void Board::movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput) {
+    try {
+        if (sRowInput < 0 || sRowInput >= Board::getNumRows() ||
+            sColInput < 0 || sColInput >= Board::getNumCols() ||
+            eRowInput < 0 || eRowInput >= Board::getNumRows() ||
+            eColInput < 0 || eColInput >= Board::getNumCols()) throw 1;
+    }
+    catch (...) {
+        std::cout << "starting or ending coordinates out of board range";
+    }
+
+    this->_boardSpaceArr[eRowInput][eColInput] = this->_boardSpaceArr[sRowInput][sColInput];
+    this->_boardSpaceArr[sRowInput][sColInput] = nullptr;
 }

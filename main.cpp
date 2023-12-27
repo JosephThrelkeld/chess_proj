@@ -9,5 +9,7 @@ int main() {
     myGame->printBoard();
     myGame->setDefaultStart();
     myGame->printBoard();
+    myGame->movePiece(0,0,4,4);
+    myGame->printBoard();
     return 0;
 }

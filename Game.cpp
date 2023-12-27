@@ -36,8 +36,8 @@ void Game::setBackRank(unsigned int row, char color) {
     this->_board.addPiece(new Bishop(color), row, 5);
     this->_board.addPiece(new Knight(color), row, 6);
     this->_board.addPiece(new Rook(color), row, 7);
-}
 
+}
 void Game::setFrontRank(unsigned int row, char color) {
     for (int i = 0; i < this->_board.getNumCols(); ++i) {
         this->_board.addPiece(new Pawn(color), row, i);
@@ -46,4 +46,8 @@ void Game::setFrontRank(unsigned int row, char color) {
 
 void Game::printBoard() {
     std::cout << this->_board << std::endl;
+}
+
+void Game::movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput) {
+    this->_board.movePiece(sRowInput,sColInput,eRowInput,eColInput);
 }
