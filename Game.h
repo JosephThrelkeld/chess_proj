@@ -18,17 +18,18 @@ public:
     std::set<std::tuple<unsigned int, unsigned int>> returnPossMoves(unsigned int rowInput, unsigned int colInput);
     void printBoard();
     void setDefaultStart();
+    std::set<std::tuple<unsigned int, unsigned int>> pieceSqrsAttackingSqr(unsigned int rowInput, unsigned int colInput, char attackingColorSym);
     void movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput);
-    void setBackRank(unsigned int row, char color);
-    void setFrontRank(unsigned int row, char color);
-
+    bool checkForChecks(char kingColorToCheck);
 protected:
     Game();
 private:
+
+    void setBackRank(unsigned int row, char color);
+    void setFrontRank(unsigned int row, char color);
     const std::set<std::tuple<int, int>> knightMoves = {{1,2},{1,-2},{-1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1}};
     bool checkMoveBasic(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput);
     std::set<std::tuple<unsigned int, unsigned int>> addAllMovesInDirection(unsigned int rowInput, unsigned int colInput, int rowDirection, int colDirection);
-    Board &getBoard();
     static Game* _instance;
     Board _board;
 };

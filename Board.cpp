@@ -64,3 +64,7 @@ void Board::movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned i
     this->_boardSpaceArr[eRowInput][eColInput] = this->_boardSpaceArr[sRowInput][sColInput];
     this->_boardSpaceArr[sRowInput][sColInput] = nullptr;
 }
+
+void Board::clearPiece(unsigned int rowInput, unsigned int colInput) {
+    this->_boardSpaceArr[rowInput][colInput] = nullptr;
+}

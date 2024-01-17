@@ -24,6 +24,7 @@ public:
     void movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput);
     Piece* getPiece(unsigned int rowInput, unsigned int colInput);
     void clearAllPieces();
+    void clearPiece(unsigned int rowInput, unsigned int colInput);
     static unsigned int getNumRows();
     static unsigned int getNumCols();
 private:
