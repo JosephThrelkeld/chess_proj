@@ -4,9 +4,9 @@
 
 #include "Game.h"
 
-Game* Game::_instance = nullptr;
+Game *Game::_instance = nullptr;
 
-Game* Game::instance() {
+Game *Game::instance() {
     if (_instance == nullptr) {
         _instance = new Game;
     }
@@ -16,11 +16,14 @@ Game* Game::instance() {
 Game::Game() = default;
 
 void Game::setDefaultStart() {
+    this->_whiteCastlingPiecesMoved = {false, false, false};
+    this->_blackCastlingPiecesMoved = {false, false, false};
+
     this->_board.clearAllPieces();
     this->setBackRank(0, 'B');
-    this->setFrontRank(1,'B');
+    this->setFrontRank(1, 'B');
     this->setBackRank(7, 'W');
-    this->setFrontRank(6,'W');
+    this->setFrontRank(6, 'W');
 }
 
 void Game::setBackRank(unsigned int row, char color) {
@@ -34,6 +37,7 @@ void Game::setBackRank(unsigned int row, char color) {
     this->_board.addPiece(new Rook(color), row, 7);
 
 }
+
 void Game::setFrontRank(unsigned int row, char color) {
     for (int i = 0; i < this->_board.getNumCols(); ++i) {
         this->_board.addPiece(new Pawn(color), row, i);
@@ -45,15 +49,21 @@ void Game::printBoard() {
 }
 
 void Game::movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput) {
-    this->_board.movePiece(sRowInput,sColInput,eRowInput,eColInput);
+    this->_board.movePiece(sRowInput, sColInput, eRowInput, eColInput);
 }
 
-std::set<std::tuple<unsigned int, unsigned int>> Game::returnPossMoves(unsigned int rowInput, unsigned int colInput) {
+//Using activeMove boolean as argument to prevent recursion due to checkForChecks conditional
+std::set<std::tuple<unsigned int, unsigned int>>
+Game::returnPossMoves(unsigned int rowInput, unsigned int colInput, bool activeMove) {
     std::set<std::tuple<unsigned int, unsigned int>> possMoves = {};
-    Piece* selectedPiece = this->_board.getPiece(rowInput, colInput);
+    Piece *selectedPiece = this->_board.getPiece(rowInput, colInput);
 
     //If square doesn't contain piece, there are no possible moves
-    if (!selectedPiece) { return possMoves; }
+    if (!selectedPiece ||
+        (activeMove &&
+         selectedPiece->getPieceSymbol() != 'K' &&
+         checkForChecks(selectedPiece->getColor())))
+        return possMoves;
 
     switch (selectedPiece->getPieceSymbol()) {
         case 'P':
@@ -77,47 +87,53 @@ std::set<std::tuple<unsigned int, unsigned int>> Game::returnPossMoves(unsigned 
             }
 
             if (checkMoveBasic(rowInput, colInput, rowInput + direction, colInput + 1) &&
-                this->_board.getPiece(rowInput + direction, colInput + 1)) possMoves.insert({rowInput + direction, colInput + 1});
+                this->_board.getPiece(rowInput + direction, colInput + 1))
+                possMoves.insert({rowInput + direction, colInput + 1});
             if (checkMoveBasic(rowInput, colInput, rowInput + direction, colInput - 1) &&
-                this->_board.getPiece(rowInput + direction, colInput - 1)) possMoves.insert({rowInput + direction, colInput - 1});
+                this->_board.getPiece(rowInput + direction, colInput - 1))
+                possMoves.insert({rowInput + direction, colInput - 1});
             break;
         case 'R':
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,-1,0));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,0,-1));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,1,0));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,0,1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, -1, 0));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 0, -1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 1, 0));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 0, 1));
 
             break;
         case 'B':
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,-1,-1));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,1,1));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,-1,1));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,1,-1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, -1, -1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 1, 1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, -1, 1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 1, -1));
 
             break;
         case 'N':
-            for (auto& currMove : this->knightMoves) {
+            for (auto &currMove : this->KNIGHT_MOVES) {
                 int rowDiff;
                 int colDiff;
-                std::tie(rowDiff,colDiff) = currMove;
-                if (checkMoveBasic(rowInput, colInput, rowInput + rowDiff, colInput + colDiff)) possMoves.insert({rowInput + rowDiff, colInput + colDiff});
+                std::tie(rowDiff, colDiff) = currMove;
+                if (checkMoveBasic(rowInput, colInput, rowInput + rowDiff, colInput + colDiff))
+                    possMoves.insert({rowInput + rowDiff, colInput + colDiff});
             }
             break;
         case 'Q':
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,-1,0));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,0,-1));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,1,0));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,0,1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, -1, 0));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 0, -1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 1, 0));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 0, 1));
 
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,-1,-1));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,1,1));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,-1,1));
-            possMoves.merge(addAllMovesInDirection(rowInput,colInput,1,-1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, -1, -1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 1, 1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, -1, 1));
+            possMoves.merge(addAllMovesInDirection(rowInput, colInput, 1, -1));
             break;
         case 'K':
+            //Can not move into check, or through check
             for (int rowDiff = -1; rowDiff < 2; ++rowDiff) {
                 for (int colDiff = -1; colDiff < 2; ++colDiff) {
-                    if (checkMoveBasic(rowInput, colInput, rowInput + rowDiff, colInput + colDiff))
+                    if (checkMoveBasic(rowInput, colInput, rowInput + rowDiff, colInput + colDiff) &&
+                        !(activeMove && pieceSqrsAttackingSqr(rowInput + rowDiff, colInput + colDiff,
+                                                              selectedPiece->getColor()).empty()))
                         possMoves.insert({rowInput + rowDiff, colInput + colDiff});
                 }
             }
@@ -135,15 +151,16 @@ std::set<std::tuple<unsigned int, unsigned int>> Game::returnPossMoves(unsigned 
  * 2. Can't move off board (duh).
  * */
 //Does not check all move rules
-bool Game::checkMoveBasic(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput) {
+bool
+Game::checkMoveBasic(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput) {
     //We shouldn't have to check for rows and columns being less than 0 as they are all unsigned
     if (sRowInput >= Board::getNumRows() ||
         eRowInput >= Board::getNumRows() ||
         sColInput >= Board::getNumCols() ||
         eColInput >= Board::getNumCols()) { return false; }
 
-    Piece* selectedPiece = this->_board.getPiece(sRowInput, sColInput);
-    Piece* targetSquarePiece = this->_board.getPiece(eRowInput,eColInput);
+    Piece *selectedPiece = this->_board.getPiece(sRowInput, sColInput);
+    Piece *targetSquarePiece = this->_board.getPiece(eRowInput, eColInput);
 
 
     //We can't move if the starting square doesn't contain a piece
@@ -155,10 +172,12 @@ bool Game::checkMoveBasic(unsigned int sRowInput, unsigned int sColInput, unsign
     return true;
 }
 
-std::set<std::tuple<unsigned int, unsigned int>> Game::addAllMovesInDirection(unsigned int rowInput, unsigned int colInput, int rowDirection, int colDirection) {
+std::set<std::tuple<unsigned int, unsigned int>>
+Game::addAllMovesInDirection(unsigned int rowInput, unsigned int colInput, int rowDirection, int colDirection) {
     std::set<std::tuple<unsigned int, unsigned int>> directionPossMoves = {};
     int magnitude = 1;
-    while (checkMoveBasic(rowInput, colInput, rowInput + (magnitude * rowDirection), colInput + (magnitude * colDirection))) {
+    while (checkMoveBasic(rowInput, colInput, rowInput + (magnitude * rowDirection),
+                          colInput + (magnitude * colDirection))) {
         directionPossMoves.insert({rowInput + (magnitude * rowDirection), colInput + (magnitude * colDirection)});
         //If we take a piece we also need to stop
         if (this->_board.getPiece(rowInput + (magnitude * rowDirection), colInput + (magnitude * colDirection))) break;
@@ -167,19 +186,20 @@ std::set<std::tuple<unsigned int, unsigned int>> Game::addAllMovesInDirection(un
     return directionPossMoves;
 }
 
-std::set<std::tuple<unsigned int, unsigned int>> Game::pieceSqrsAttackingSqr(unsigned int rowInput, unsigned int colInput, char attackingColorSym) {
+std::set<std::tuple<unsigned int, unsigned int>>
+Game::pieceSqrsAttackingSqr(unsigned int rowInput, unsigned int colInput, char attackingColorSym) {
     std::set<std::tuple<unsigned int, unsigned int>> sqrsToReturn = {};
 
     //Putting dummy piece of color opposite of attacking color if empty to only allow pawns to capture on square
     bool emptySq = false;
     if (this->_board.getPiece(rowInput, colInput) == nullptr) {
         emptySq = true;
-        Pawn* dummyPiece = (attackingColorSym == 'W') ? new Pawn('B') : new Pawn('W');
+        Pawn *dummyPiece = (attackingColorSym == 'W') ? new Pawn('B') : new Pawn('W');
         this->_board.addPiece(dummyPiece, rowInput, colInput);
     }
     for (int i = 0; i < this->_board.getNumRows(); ++i) {
         for (int j = 0; j < this->_board.getNumCols(); ++j) {
-            if (this->returnPossMoves(i,j).contains({rowInput, colInput}))  sqrsToReturn.insert({i,j});
+            if (this->returnPossMoves(i, j, false).contains({rowInput, colInput})) sqrsToReturn.insert({i, j});
         }
     }
 
@@ -193,10 +213,13 @@ bool Game::checkForChecks(char kingColorToCheck) {
     std::tuple<unsigned int, unsigned int> kingLocation;
     for (int i = 0; i < Board::getNumRows(); ++i) {
         for (int j = 0; j < Board::getNumCols(); ++j) {
-            Piece* currPiece = this->_board.getPiece(i,j);
-            if (currPiece && currPiece->getPieceSymbol() == 'K' && currPiece->getColor() == kingColorToCheck) kingLocation = {i,j};
+            Piece *currPiece = this->_board.getPiece(i, j);
+            if (currPiece && currPiece->getPieceSymbol() == 'K' &&
+                currPiece->getColor() == kingColorToCheck)
+                kingLocation = {i, j};
         }
     }
 
-    return !this->pieceSqrsAttackingSqr(std::get<0>(kingLocation),std::get<1>(kingLocation), attackingColorSym).empty();
+    return !this->pieceSqrsAttackingSqr(std::get<0>(kingLocation), std::get<1>(kingLocation),
+                                        attackingColorSym).empty();
 }

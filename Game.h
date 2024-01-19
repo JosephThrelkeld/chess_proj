@@ -14,26 +14,50 @@
 //Using Singleton design pattern as we only want one game running at a time (presumably)
 class Game {
 public:
-    static Game* instance();
-    std::set<std::tuple<unsigned int, unsigned int>> returnPossMoves(unsigned int rowInput, unsigned int colInput);
+    static Game *instance();
+
+    std::set<std::tuple<unsigned int, unsigned int>> returnPossMoves(unsigned int rowInput, unsigned int colInput, bool activeMove);
+
     void printBoard();
+
     void setDefaultStart();
-    std::set<std::tuple<unsigned int, unsigned int>> pieceSqrsAttackingSqr(unsigned int rowInput, unsigned int colInput, char attackingColorSym);
+
+    std::set<std::tuple<unsigned int, unsigned int>>
+    pieceSqrsAttackingSqr(unsigned int rowInput, unsigned int colInput, char attackingColorSym);
+
     void movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput);
+
     bool checkForChecks(char kingColorToCheck);
+
 protected:
     Game();
+
 private:
 
     void setBackRank(unsigned int row, char color);
+
     void setFrontRank(unsigned int row, char color);
-    const std::set<std::tuple<int, int>> knightMoves = {{1,2},{1,-2},{-1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1}};
+
+    const std::set<std::tuple<int, int>> KNIGHT_MOVES {{1,  2},
+                                                       {1,  -2},
+                                                       {-1, 2},
+                                                       {-1, -2},
+                                                       {2,  1},
+                                                       {2,  -1},
+                                                       {-2, 1},
+                                                       {-2, -1}};
+
     bool checkMoveBasic(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput);
-    std::set<std::tuple<unsigned int, unsigned int>> addAllMovesInDirection(unsigned int rowInput, unsigned int colInput, int rowDirection, int colDirection);
-    static Game* _instance;
+
+    std::set<std::tuple<unsigned int, unsigned int>>
+    addAllMovesInDirection(unsigned int rowInput, unsigned int colInput, int rowDirection, int colDirection);
+
+    std::tuple<bool, bool, bool> _whiteCastlingPiecesMoved;
+    std::tuple<bool, bool, bool> _blackCastlingPiecesMoved;
+
+    static Game *_instance;
     Board _board;
 };
-
 
 
 #endif //CHESS_PROJ_GAME_H
