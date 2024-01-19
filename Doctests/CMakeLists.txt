@@ -1,3 +1,3 @@
-add_executable(Doctest_tests_run BoardTests.cpp)
+add_executable(Doctest_tests_run BoardTests.cpp GameTests.cpp)
 
 target_link_libraries(Doctest_tests_run GameLogic_lib)
