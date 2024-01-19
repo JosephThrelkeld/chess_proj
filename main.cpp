@@ -1,7 +1,5 @@
 #include <iostream>
 #include "Game.h"
-#include "Pieces/Pawn.h"
-#include "Pieces/Piece.h"
 
 
 int main() {

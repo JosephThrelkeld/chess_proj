@@ -3,7 +3,7 @@
 //
 
 #include "Board.h"
-#include "Pieces/Pawn.h"
+#include "../Pieces/Pawn.h"
 
 Board::Board() : _boardSpaceArr() {}
 

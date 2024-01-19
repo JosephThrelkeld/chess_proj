@@ -5,7 +5,7 @@
 #ifndef CHESS_PROJ_BOARD_H
 #define CHESS_PROJ_BOARD_H
 
-#include "Pieces/Piece.h"
+#include "Pieces/AllPieces.h"
 #include <iostream>
 
 //Using operator overloading for testing contents of board because it centralizes all
