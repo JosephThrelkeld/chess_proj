@@ -10,6 +10,7 @@
 #include <tuple>
 #include <set>
 #include <stdexcept>
+#include <map>
 
 //Using Singleton design pattern as we only want one game running at a time (presumably)
 class Game {
@@ -33,6 +34,8 @@ protected:
     Game();
 
 private:
+    bool canCastle(char color, std::tuple<unsigned int, unsigned int> kingLocation,
+                   std::tuple<unsigned int, unsigned int> rookLocation);
 
     void setBackRank(unsigned int row, char color);
 
@@ -52,8 +55,7 @@ private:
     std::set<std::tuple<unsigned int, unsigned int>>
     addAllMovesInDirection(unsigned int rowInput, unsigned int colInput, int rowDirection, int colDirection);
 
-    std::tuple<bool, bool, bool> _whiteCastlingPiecesMoved;
-    std::tuple<bool, bool, bool> _blackCastlingPiecesMoved;
+    std::map<std::tuple<int,int>, bool> _mapCastlingPiecesHaveMoved;
 
     static Game *_instance;
     Board _board;

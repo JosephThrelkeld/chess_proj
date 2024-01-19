@@ -16,8 +16,12 @@ Game *Game::instance() {
 Game::Game() = default;
 
 void Game::setDefaultStart() {
-    this->_whiteCastlingPiecesMoved = {false, false, false};
-    this->_blackCastlingPiecesMoved = {false, false, false};
+    this->_mapCastlingPiecesHaveMoved = {{{0, 0}, false},
+                                         {{0, 4}, false},
+                                         {{0, 7}, false},
+                                         {{7, 0}, false},
+                                         {{7, 4}, false},
+                                         {{7, 7}, false}};
 
     this->_board.clearAllPieces();
     this->setBackRank(0, 'B');
@@ -49,6 +53,12 @@ void Game::printBoard() {
 }
 
 void Game::movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput) {
+    Piece *pieceToMove = this->_board.getPiece(sRowInput, sColInput);
+    //When king or rooks move from starting position, we note that down to prevent them from castling later
+    if (this->_mapCastlingPiecesHaveMoved.contains({sRowInput, sColInput}) &&
+        (!this->_mapCastlingPiecesHaveMoved[{sRowInput, sColInput}])) {
+        this->_mapCastlingPiecesHaveMoved[{sRowInput, sColInput}] = true;
+    }
     this->_board.movePiece(sRowInput, sColInput, eRowInput, eColInput);
 }
 
@@ -132,13 +142,21 @@ Game::returnPossMoves(unsigned int rowInput, unsigned int colInput, bool activeM
             for (int rowDiff = -1; rowDiff < 2; ++rowDiff) {
                 for (int colDiff = -1; colDiff < 2; ++colDiff) {
                     if (checkMoveBasic(rowInput, colInput, rowInput + rowDiff, colInput + colDiff) &&
-                        !(activeMove && pieceSqrsAttackingSqr(rowInput + rowDiff, colInput + colDiff,
-                                                              selectedPiece->getColor()).empty()))
+                            (!activeMove || pieceSqrsAttackingSqr(rowInput + rowDiff, colInput + colDiff,
+                                                              (selectedPiece->getColor() == 'W') ? 'B' : 'W').empty())) {
                         possMoves.insert({rowInput + rowDiff, colInput + colDiff});
+                    }
+
                 }
             }
-            break;
-        default:
+
+            if (activeMove) {
+                if (canCastle(selectedPiece->getColor(), {rowInput, colInput}, {rowInput, 0}))
+                    possMoves.insert({rowInput, 2});
+                if (canCastle(selectedPiece->getColor(), {rowInput, colInput}, {rowInput, 7}))
+                    possMoves.insert({rowInput, 6});
+            }
+
             break;
     }
 
@@ -222,4 +240,43 @@ bool Game::checkForChecks(char kingColorToCheck) {
 
     return !this->pieceSqrsAttackingSqr(std::get<0>(kingLocation), std::get<1>(kingLocation),
                                         attackingColorSym).empty();
+}
+
+bool Game::canCastle(char color, std::tuple<unsigned int, unsigned int> kingLocation,
+                     std::tuple<unsigned int, unsigned int> rookLocation) {
+
+    if (std::get<0>(kingLocation) != std::get<0>(rookLocation) ||
+        !this->_mapCastlingPiecesHaveMoved.contains(kingLocation) ||
+        !this->_mapCastlingPiecesHaveMoved.contains(rookLocation) ||
+        this->_mapCastlingPiecesHaveMoved[kingLocation] ||
+        this->_mapCastlingPiecesHaveMoved[rookLocation])
+        return false;
+
+    char kingColor;
+    char attackingColor;
+
+    if (this->_board.getPiece(std::get<0>(kingLocation), std::get<1>(kingLocation))->getColor() == 'W') {
+        kingColor = 'W';
+        attackingColor = 'B';
+    } else {
+        kingColor = 'B';
+        attackingColor = 'W';
+    }
+
+    bool validCastle = true;
+
+    int normCastlingDirection = ((int) std::get<1>(rookLocation) - (int) std::get<1>(kingLocation)) /
+                                abs((int) std::get<1>(rookLocation) - (int) std::get<1>(kingLocation));
+
+    //Checking squares between king and rook to be empty
+    for (int i = std::get<1>(kingLocation);
+         i != std::get<1>(rookLocation); i += normCastlingDirection) {
+        bool x = (this->_board.getPiece(std::get<0>(kingLocation), i) && i != std::get<1>(kingLocation));
+        bool y = !pieceSqrsAttackingSqr(std::get<0>(kingLocation), i, attackingColor).empty();
+        bool z = x || y;
+        if (z)
+            validCastle = false;
+    }
+
+    return validCastle;
 }
