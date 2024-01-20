@@ -216,12 +216,12 @@ TEST_CASE("King Tests") {
     CHECK(testGame->returnPossMoves(0, 4) == std::set<std::tuple<unsigned int, unsigned int>>{{0, 3},
                                                                                               {0, 2}});
 
-    testGame->movePiece(7,2,0,2);
+    testGame->movePiece(7, 2, 0, 2);
 
     //King shouldn't be able move if enemy piece is blocking
-    CHECK(testGame->returnPossMoves(0,4) == std::set<std::tuple<unsigned int, unsigned int>>{{0,3}});
+    CHECK(testGame->returnPossMoves(0, 4) == std::set<std::tuple<unsigned int, unsigned int>>{{0, 3}});
 
-    testGame->movePiece(0,2,7,2);
+    testGame->movePiece(0, 2, 7, 2);
     testGame->movePiece(0, 5, 4, 7);
     testGame->movePiece(0, 6, 3, 6);
 
@@ -230,7 +230,6 @@ TEST_CASE("King Tests") {
                                                                                               {0, 2},
                                                                                               {0, 5},
                                                                                               {0, 6}});
-
 
 
     testGame->movePiece(7, 0, 4, 4);
@@ -270,7 +269,7 @@ TEST_CASE("King Tests") {
     testGame->movePiece(3, 4, 0, 4);
 
     //Can't castle if king moves and then moves back
-    CHECK(testGame->returnPossMoves(0, 4) == std::set<std::tuple<unsigned int, unsigned>>{{0, 3},
-                                                                                          {0, 5},
-                                                                                          {1, 5}});
+    CHECK(testGame->returnPossMoves(0, 4) == std::set<std::tuple<unsigned int, unsigned int>>{{0, 3},
+                                                                                              {0, 5},
+                                                                                              {1, 5}});
 }
