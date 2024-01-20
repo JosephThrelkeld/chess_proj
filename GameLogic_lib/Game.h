@@ -17,7 +17,7 @@ class Game {
 public:
     static Game *instance();
 
-    std::set<std::tuple<unsigned int, unsigned int>> returnPossMoves(unsigned int rowInput, unsigned int colInput, bool activeMove);
+    std::set<std::tuple<unsigned int, unsigned int>> returnPossMoves(unsigned int rowInput, unsigned int colInput, bool activeMove = true);
 
     void printBoard();
 

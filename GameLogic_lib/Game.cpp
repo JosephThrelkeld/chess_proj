@@ -150,6 +150,7 @@ Game::returnPossMoves(unsigned int rowInput, unsigned int colInput, bool activeM
                 }
             }
 
+            //Checking Castling as a king move, when moving king, rook will also be moved.
             if (activeMove) {
                 if (canCastle(selectedPiece->getColor(), {rowInput, colInput}, {rowInput, 0}))
                     possMoves.insert({rowInput, 2});
