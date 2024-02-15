@@ -11,13 +11,15 @@
 #include <set>
 #include <stdexcept>
 #include <map>
+#include <regex>
 
 //Using Singleton design pattern as we only want one game running at a time (presumably)
 class Game {
 public:
     static Game *instance();
 
-    std::set<std::tuple<unsigned int, unsigned int>> returnPossMoves(unsigned int rowInput, unsigned int colInput, bool activeMove = true);
+    std::set<std::tuple<unsigned int, unsigned int>>
+    returnPossMoves(unsigned int rowInput, unsigned int colInput, bool activeMove = true);
 
     void printBoard();
 
@@ -30,6 +32,10 @@ public:
 
     bool checkForChecks(char kingColorToCheck);
 
+    bool checkForCheckMate(char kingColorToCheck);
+
+    void runGameLoop();
+
 protected:
     Game();
 
@@ -41,24 +47,33 @@ private:
 
     void setFrontRank(unsigned int row, char color);
 
-    const std::set<std::tuple<int, int>> KNIGHT_MOVES {{1,  2},
-                                                       {1,  -2},
-                                                       {-1, 2},
-                                                       {-1, -2},
-                                                       {2,  1},
-                                                       {2,  -1},
-                                                       {-2, 1},
-                                                       {-2, -1}};
+    const std::set<std::tuple<int, int>> KNIGHT_MOVES{{1,  2},
+                                                      {1,  -2},
+                                                      {-1, 2},
+                                                      {-1, -2},
+                                                      {2,  1},
+                                                      {2,  -1},
+                                                      {-2, 1},
+                                                      {-2, -1}};
 
-    bool checkMoveBasic(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput);
+    bool checkMoveBasic(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput, bool activeMove);
 
     std::set<std::tuple<unsigned int, unsigned int>>
-    addAllMovesInDirection(unsigned int rowInput, unsigned int colInput, int rowDirection, int colDirection);
+    addAllMovesInDirection(unsigned int rowInput, unsigned int colInput, int rowDirection, int colDirection,
+                           bool activeMove);
 
-    std::map<std::tuple<int,int>, bool> _mapCastlingPiecesHaveMoved;
+    std::map<std::tuple<int, int>, bool> _mapCastlingPiecesHaveMoved;
 
     static Game *_instance;
     Board _board;
+
+    int turnCounter;
+
+    int convertColChartoInt(char rowCharInput);
+
+    std::tuple<unsigned int, unsigned int> findKing(char colorToFind);
+
+
 };
 
 
