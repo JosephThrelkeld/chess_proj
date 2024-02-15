@@ -5,7 +5,7 @@
 void printMoveSet(std::set<std::tuple<unsigned int, unsigned int>> moveSet) {
     int rowDirec;
     int colDirec;
-    for (auto &move : moveSet) {
+    for (auto &move: moveSet) {
         std::tie(rowDirec, colDirec) = move;
         std::cout << rowDirec << " " << colDirec << std::endl;
     }
@@ -30,6 +30,7 @@ TEST_CASE("Basic Game Tests") {
     testGame->movePiece(0, 3, 2, 3);
     testGame->movePiece(1, 4, 2, 5);
 
+    printMoveSet(testGame->returnPossMoves(2, 1));
     //If King is in check, other pieces of same color should have no possible moves
     CHECK(testGame->returnPossMoves(2, 1).empty());
 
@@ -198,6 +199,7 @@ TEST_CASE("King Tests") {
                                                                                               {4, 4}});
 
     testGame->movePiece(3, 3, 4, 4);
+
     //King shouldn't be able to move into check
     CHECK(testGame->returnPossMoves(4, 4) == std::set<std::tuple<unsigned int, unsigned int>>{{3, 3},
                                                                                               {3, 4},
@@ -218,7 +220,7 @@ TEST_CASE("King Tests") {
 
     testGame->movePiece(7, 2, 0, 2);
 
-    //King shouldn't be able move if enemy piece is blocking
+    //King shouldn't be able to move if enemy piece is blocking
     CHECK(testGame->returnPossMoves(0, 4) == std::set<std::tuple<unsigned int, unsigned int>>{{0, 3}});
 
     testGame->movePiece(0, 2, 7, 2);
@@ -238,11 +240,14 @@ TEST_CASE("King Tests") {
     //King shouldn't be able to castle out of check
     CHECK(testGame->returnPossMoves(0, 4) == std::set<std::tuple<unsigned int, unsigned int>>{{0, 3},
                                                                                               {0, 5}});
+    //Testing checkForChecks function
+    CHECK(testGame->checkForChecks('B'));
 
     testGame->movePiece(4, 4, 4, 5);
     testGame->movePiece(3, 1, 1, 4);
     testGame->movePiece(1, 5, 3, 7);
 
+    printMoveSet(testGame->returnPossMoves(0, 4));
     //King shouldn't be able to castle through check
     CHECK(testGame->returnPossMoves(0, 4) == std::set<std::tuple<unsigned int, unsigned int>>{{0, 3},
                                                                                               {0, 2}});
@@ -272,4 +277,31 @@ TEST_CASE("King Tests") {
     CHECK(testGame->returnPossMoves(0, 4) == std::set<std::tuple<unsigned int, unsigned int>>{{0, 3},
                                                                                               {0, 5},
                                                                                               {1, 5}});
+}
+
+TEST_CASE("Check and Checkmate Tests") {
+    CHECK(testGame);
+
+    testGame->setDefaultStart();
+
+    testGame->movePiece(7, 3, 5, 4);
+    testGame->movePiece(1, 4, 2, 7);
+
+    CHECK(testGame->checkForChecks('B'));
+
+    CHECK(!testGame->checkForCheckMate('B'));
+
+    testGame->movePiece(0, 2, 2, 4);
+
+    //Pieces shouldn't be able to move and put their king in check
+    CHECK(testGame->returnPossMoves(2, 4).empty());
+
+    testGame->movePiece(2, 4, 0, 2);
+    testGame->movePiece(0, 4, 5, 0);
+    testGame->movePiece(5, 4, 4, 4);
+
+    testGame->printBoard();
+
+    //If king is in check and no moves will get it out of check, that is checkmate
+    CHECK(testGame->checkForCheckMate('B'));
 }

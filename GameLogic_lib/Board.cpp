@@ -48,8 +48,7 @@ unsigned int Board::getNumCols() {
 }
 
 Piece *Board::getPiece(unsigned int rowInput, unsigned int colInput) {
-    if (this->_boardSpaceArr[rowInput][colInput] != nullptr) return this->_boardSpaceArr[rowInput][colInput];
-    return nullptr;
+    return this->_boardSpaceArr[rowInput][colInput];
 }
 
 void Board::movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput) {
