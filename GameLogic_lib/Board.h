@@ -6,6 +6,7 @@
 #define CHESS_PROJ_BOARD_H
 
 #include "Pieces/AllPieces.h"
+#include "ChessPositionAndMovement.h"
 #include <iostream>
 
 //Using operator overloading for testing contents of board because it centralizes all
@@ -20,11 +21,11 @@ class Board {
 public:
     Board();
     friend std::ostream& operator<<(std::ostream& os, const Board& bd);
-    void addPiece(Piece* inputPiece, unsigned int rowInput, unsigned int colInput);
-    void movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput);
-    Piece* getPiece(unsigned int rowInput, unsigned int colInput);
+    void addPiece(Piece* inputPiece, ChessPosition position);
+    void movePiece(ChessPosition sPosition, ChessPosition ePosition);
+    Piece* getPiece(ChessPosition position);
     void clearAllPieces();
-    void clearPiece(unsigned int rowInput, unsigned int colInput);
+    void clearPiece(ChessPosition position);
     static unsigned int getNumRows();
     static unsigned int getNumCols();
 private:

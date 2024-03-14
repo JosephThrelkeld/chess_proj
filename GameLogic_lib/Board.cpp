@@ -7,8 +7,8 @@
 
 Board::Board() : _boardSpaceArr() {}
 
-void Board::addPiece(Piece *inputPiece, unsigned int rowInput, unsigned int colInput) {
-    this->_boardSpaceArr[rowInput][colInput] = inputPiece;
+void Board::addPiece(Piece *inputPiece, ChessPosition position) {
+    this->_boardSpaceArr[position.row()][position.col()] = inputPiece;
 }
 
 //Using operator overloading to print board for debugging and it is fun.
@@ -47,26 +47,27 @@ unsigned int Board::getNumCols() {
     return NUM_COLS;
 }
 
-Piece *Board::getPiece(unsigned int rowInput, unsigned int colInput) {
-    return this->_boardSpaceArr[rowInput][colInput];
+Piece *Board::getPiece(ChessPosition position) {
+    return this->_boardSpaceArr[position.row()][position.col()];
 }
 
-void Board::movePiece(unsigned int sRowInput, unsigned int sColInput, unsigned int eRowInput, unsigned int eColInput) {
+void Board::movePiece(ChessPosition sPosition, ChessPosition ePosition) {
     try {
-        if (sRowInput < 0 || sRowInput >= Board::getNumRows() ||
-            sColInput < 0 || sColInput >= Board::getNumCols() ||
-            eRowInput < 0 || eRowInput >= Board::getNumRows() ||
-            eColInput < 0 || eColInput >= Board::getNumCols())
+        //Since ChessPosition has unsigned ints, don't have to check for them being less than zero.
+        if (sPosition.row() >= Board::getNumRows() ||
+            sPosition.col() >= Board::getNumCols() ||
+            ePosition.row() >= Board::getNumRows() ||
+            ePosition.col() >= Board::getNumCols())
             throw 1;
     }
     catch (...) {
         std::cout << "starting or ending coordinates out of board range";
     }
 
-    this->_boardSpaceArr[eRowInput][eColInput] = this->_boardSpaceArr[sRowInput][sColInput];
-    this->_boardSpaceArr[sRowInput][sColInput] = nullptr;
+    this->_boardSpaceArr[ePosition.row()][ePosition.col()] = this->_boardSpaceArr[sPosition.row()][sPosition.col()];
+    this->_boardSpaceArr[sPosition.row()][sPosition.col()] = nullptr;
 }
 
-void Board::clearPiece(unsigned int rowInput, unsigned int colInput) {
-    this->_boardSpaceArr[rowInput][colInput] = nullptr;
+void Board::clearPiece(ChessPosition position) {
+    this->_boardSpaceArr[position.row()][position.col()] = nullptr;
 }
